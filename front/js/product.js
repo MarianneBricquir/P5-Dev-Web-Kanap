@@ -27,20 +27,16 @@ function infoProduct(urlWithId) {
                     document.querySelector('#title').textContent = `${data.name}`;
                     document.querySelector('#price').textContent = `${data.price}`;
                     document.querySelector('#description').textContent = `${data.description}`;
-                    let colorOptions = data.colors ;
+                    let colorOptions = data.colors;
                     let colorLength = colorOptions.length;
                     console.log(colorOptions);
-                    let option = `<option `;
-                     /*for (let c = 0; c < colorLength; c++) {
+                    let option = '<option value="">--SVP, choisissez une couleur --</option>';
+                    for (let c = 0; c < colorLength; c++) {
                         let choose = colorOptions[c];
-                        if{
-
-                        }else{
-
-                        }
-                        option += document.querySelector(${option}).innerHTML = `${option} value=${choose}>${choose}`;
-                     }
-                    option += `</option>`*/
+                        option += `<option value="${choose}">${choose}</option>`
+                    }
+                    document.querySelector("#colors").innerHTML = option; // comprendre le appendChild 
+                    // tester createElement()
                 }));
 }
 
@@ -48,3 +44,6 @@ function infoProduct(urlWithId) {
 // Appel de la fonction dans la page produit
 let currentUrlWithId = `http://localhost:3000/api/products/${currentId}`
 infoProduct(currentUrlWithId)
+
+
+// localStorage (API navigateurs): pour enregitrer une valeur associée à une clée (valeur = panier)
