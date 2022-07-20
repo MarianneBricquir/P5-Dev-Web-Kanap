@@ -13,24 +13,28 @@ appel de la fonction displayBasketPorducts à la fin de cette première fct
 let listBasketProducts = JSON.parse(localStorage.getItem("basket"));
 console.log(listBasketProducts);
 
-/*
+/*Fonction d'affichage*/
 function displayBasketProducts(tableProducts) {
+  /*console.log("Salut")
+  if (listBasketProducts = true){
+    console.log(listBasketProducts)
+  }*/
   let display = ``;
   for (product of tableProducts) {
-      display += `<article class="cart__item" data-id="${basketProduct.id}" data-color="${basketProduct.color}">
+      display += `<article class="cart__item" data-id="${product.productDetail._id}" data-color="${product.choosedColor}">
       <div class="cart__item__img">
-        <img src="${tableProducts.productdetail.imageUrl}" alt="Photographie d'un canapé">
+        <img src="${product.productDetail.imageUrl}" alt="Photographie d'un canapé">
       </div>
       <div class="cart__item__content">
         <div class="cart__item__content__description">
-          <h2>${basketProduct.id}</h2>
-          <p>${tableProducts.color}</p>
-          <p>${tableProducts.productdetail.price}</p>
+          <h2>${product.productDetail.name}</h2>
+          <p>${product.choosedColor}</p>
+          <p>${product.productDetail.price} €</p>
         </div>
         <div class="cart__item__content__settings">
           <div class="cart__item__content__settings__quantity">
             <p>Qté : </p>
-            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${basketProduct.quantity}">
+            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.choosedQuantity}">
           </div>
           <div class="cart__item__content__settings__delete">
             <p class="deleteItem">Supprimer</p>
@@ -39,24 +43,46 @@ function displayBasketProducts(tableProducts) {
       </div>
     </article> `
     }
-  document.querySelector("#cart__items").innerHTML = display
-};*/
+  document.querySelector("#cart__items").innerHTML = display ;
+  /*document.querySelector("#totalQuantity").innerHTML = getNumberProduct();
+  document.querySelector("#totalQuantity").innerHTML = getTotalPrice();*/
+};
 
-tableProducts = [];
+/*Initialisation de tableProducts*/
+let tableProducts = [];
 
-function getProductsBasket() {
+/*Fonction pour récupérer les infos depuis l'API*/
+async function getProductsBasket() {
   for (basketProduct of listBasketProducts) {
-    fetch(`http://localhost:3000/api/products/${basketProduct.id}`)
+    /*let productLocalStorage = basketProduct*/
+    await fetch(`http://localhost:3000/api/products/${basketProduct.id}`)
       .then((response) =>
         response.json()
           .then((apiBasketProduct => {
-              /*console.log(apiBasketProduct);*/
-              tableProducts.push({ id_test : basketProduct.id, choosedColor: basketProduct.color, choosedQuantity: basketProduct.quantity, productdetail:apiBasketProduct});
+            /*console.log(productLocalStorage)*/
+           /*console.log(apiBasketProduct);*/
+            tableProducts.push({ choosedColor: basketProduct.color, choosedQuantity: basketProduct.quantity, productDetail: apiBasketProduct });
           })))
-      /*.catch(error => console.log(`Erreur : ` + err));*/
+          displayBasketProducts(tableProducts)
   }
-}
+};
 
-getProductsBasket()
-console.log(tableProducts)
+getProductsBasket();
+
+let basket = listBasketProducts ;
+getNumberProduct(); 
+
+
+/*Propriété dataset*/
+/*Modifier la quantité depuis la page panier dans le local storage*/
+
+
+
+/*Au clic sur le bouton supprimer, enlever l'articile du panier et du localStorage*/
+
+
+
+
+
+
 

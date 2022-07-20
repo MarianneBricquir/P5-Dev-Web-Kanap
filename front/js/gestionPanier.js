@@ -31,7 +31,7 @@ class Basket {
     }
 
     // supprimer un produit du panier par son id et sa couleur ! FONCITONNE AVEC LE OU LOGIQUE || mais pas le &&
-    // utiliser le remove item??
+    // utiliser le remove item?
     removeFromBasket(product) {
         this.basket = this.basket.filter(p => p.id != product.id || p.color != product.color) // .filter
         this.save();
@@ -68,26 +68,3 @@ class Basket {
         return total;
     }
 }
-
-
-
-/**/
-let btnAddToBasket = document.querySelector("#addToCart");
-console.log(btnAddToBasket);
-
-/*initialisation du panier*/
-let basket = new Basket();
-/**/
-let myProduct = btnAddToBasket.addEventListener("click", () => {
-    testProduct = 
-        {
-            "id":currentId,
-            "color":document.querySelector("#colors").value,
-            "quantity":document.querySelector("#quantity").value
-
-        }
-    ;
-    console.log(testProduct);
-});
-
-basket.add(myProduct)
