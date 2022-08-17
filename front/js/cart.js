@@ -11,13 +11,13 @@ appel de la fonction displayBasketPorducts à la fin de cette première fct
 */
 
 let listBasketProducts = JSON.parse(localStorage.getItem("basket"));
-console.log(listBasketProducts);
+/*console.log(listBasketProducts);*/
 
 /*Fonction d'affichage*/
 function displayBasketProducts(tableProducts) {
-  /*console.log("Salut")
-  if (listBasketProducts = true){
-    console.log(listBasketProducts)
+  /* vérifier s'il y a un produit dans le panier ?
+     if (listBasketProducts = true){
+     console.log(listBasketProducts)
   }*/
   let display = ``;
   for (product of tableProducts) {
@@ -69,16 +69,86 @@ async function getProductsBasket() {
 
 getProductsBasket();
 
-let basket = listBasketProducts ;
-getNumberProduct(); 
+
+
+/* Afficher le nombre de produit et le prix total */
+console.log(listBasketProducts);
+console.log(tableProducts);
+
+
+function getNumberProducts(basket) {
+  let canapesTotalQuantity = [] ;
+  basket.forEach((canape) => {
+    canapesTotalQuantity.push(canape.quantity);
+  });
+  document.querySelector("#totalQuantity").innerHTML = `${eval(canapesTotalQuantity.join("+"))}`; // methode eval js qui permet d'évaluer la chaîne de caractère et méthode join
+};
+
+/*Test 2 à partir des objets du tableau table product - servira pour récupérer le prix total aussi*/
+  let canapesTotalQuantity2 = [] ;
+  for (object of tableProducts) {
+  };
+  console.log(canapesTotalQuantity2)
+
+
+  /*
+  document.querySelector("#totalQuantity").innerHTML = `${eval(canapesTotalQuantity.join("+"))}`; // methode eval js qui permet d'évaluer la chaîne de caractère et méthode join
+*/
+
+/**/
+function getPriceProducts(basket) {
+  basket.forEach((canape) => {
+    canapesTotalQuantity.push(canape.price);
+  });
+  document.querySelector("#totalPrice").innerHTML = `${eval(canapesTotalQuantity.join("+"))}`; // methode eval js qui permet d'évaluer la chaîne de caractère et méthode join
+};
+
+getNumberProducts(listBasketProducts) 
+
+
+
+
+
+
 
 
 /*Propriété dataset*/
 /*Modifier la quantité depuis la page panier dans le local storage*/
+/*addEventListener de type change*/
 
 
+/*Questions à Terrence : 
+- créer la fonction changeQuantity avec addEventListener événement change
+mais la difficulté : ce changement s'oppère dans le DOM par l'utilisateur : comment récupérer cette quantité inscrite dans la div de class '.itemQuantity' ?
+puis changer le local storage en conséquence ?
+push.newQuantity 
 
-/*Au clic sur le bouton supprimer, enlever l'articile du panier et du localStorage*/
+
+Au clic sur le bouton supprimer, enlever l'article du panier et du localStorage
+- créer une fonction removeFromBasket 
+removeFromBasket(product) {
+        this.basket = this.basket.filter(p => p.id != product.id || p.color != product.color)
+        this.save();
+    }
+avec une écoute sur le bouton de la class deleteItem
+*/
+
+
+/*
+let myProduct = btnAddToBasket.addEventListener("click", () => {
+  product = 
+      {
+          "id":currentId,
+          "color":document.querySelector("#colors").value,
+          "quantity":parseInt(document.querySelector("#quantity").value)
+      }
+  ;*/
+
+/* https://www.javascripttutorial.net/javascript-dom/javascript-change-event/
+let select = document.querySelector('#lang');
+select.addEventListener('change', function () {
+            result.textContent = this.value;});*/
+
 
 
 

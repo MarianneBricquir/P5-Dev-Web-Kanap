@@ -141,7 +141,7 @@ let myProduct = btnAddToBasket.addEventListener("click", () => {
         {
             "id":currentId,
             "color":document.querySelector("#colors").value,
-            "quantity":document.querySelector("#quantity").value
+            "quantity":parseInt(document.querySelector("#quantity").value)
         }
     ;
     /*Condition pour ajouter le produit : que l'utilisateur ait choisi une couleur et une quantité*/
