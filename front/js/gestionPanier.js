@@ -38,7 +38,6 @@ class Basket {
     }
 
     // changer la quantité d'un produit
-    /*
     changeQuantity(product, quantity) {
         let foundProduct = this.basket.find(p => p.id == product.id && p.color == product.color)
         if (foundProduct != undefined) {
@@ -49,7 +48,8 @@ class Basket {
                 this.save();
             }
         }
-    }*/
+    }
+    
     
     // afficher le nombre de produits dans le panier
     getNumberProducts() {

@@ -13,28 +13,42 @@ appel de la fonction displayBasketPorducts à la fin de cette première fct
 let listBasketProducts = JSON.parse(localStorage.getItem("basket"));
 /*console.log(listBasketProducts);*/
 
+
+/* function qui permet d'aller chercher les éléments d'un seul produit*/
+function getOneProduct (idProduct) {
+  return fetch(`http://localhost:3000/api/products/${idProduct}`)
+      .then((response) =>
+        response.json()
+          .then((apiBasketProduct => {
+            return apiBasketProduct
+          })))
+};
+
 /*Fonction d'affichage*/
-function displayBasketProducts(tableProducts) {
+async function displayBasketProducts() {
   /* vérifier s'il y a un produit dans le panier ?
      if (listBasketProducts = true){
      console.log(listBasketProducts)
   }*/
   let display = ``;
-  for (product of tableProducts) {
-      display += `<article class="cart__item" data-id="${product.productDetail._id}" data-color="${product.choosedColor}">
+  console.log(listBasketProducts);
+  for (basketProduct of listBasketProducts) {
+    let product = await getOneProduct(basketProduct.id) ;
+    /*console.log(product.choosedQuantity);*/
+      display += `<article class="cart__item" data-id="${basketProduct.id}" data-color="${basketProduct.color}">
       <div class="cart__item__img">
-        <img src="${product.productDetail.imageUrl}" alt="Photographie d'un canapé">
+        <img src="${product.imageUrl}" alt="Photographie d'un canapé">
       </div>
       <div class="cart__item__content">
         <div class="cart__item__content__description">
-          <h2>${product.productDetail.name}</h2>
-          <p>${product.choosedColor}</p>
-          <p>${product.productDetail.price} €</p>
+          <h2>${product.name}</h2>
+          <p>${basketProduct.color}</p>
+          <p>${product.price} €</p>
         </div>
         <div class="cart__item__content__settings">
           <div class="cart__item__content__settings__quantity">
             <p>Qté : </p>
-            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.choosedQuantity}">
+            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${basketProduct.quantity}">
           </div>
           <div class="cart__item__content__settings__delete">
             <p class="deleteItem">Supprimer</p>
@@ -48,74 +62,70 @@ function displayBasketProducts(tableProducts) {
   document.querySelector("#totalQuantity").innerHTML = getTotalPrice();*/
 };
 
-/*Initialisation de tableProducts*/
-let tableProducts = [];
 
-/*Fonction pour récupérer les infos depuis l'API*/
-async function getProductsBasket() {
+displayBasketProducts();
+
+/*********************************************************************************************************************************************************************** */
+// Session mentorat du 19/08
+
+async function getTotalQuantitytAndPrice () {
+  let totalQuantity = 0;
+  let totalPrice = 0;
   for (basketProduct of listBasketProducts) {
-    /*let productLocalStorage = basketProduct*/
-    await fetch(`http://localhost:3000/api/products/${basketProduct.id}`)
-      .then((response) =>
-        response.json()
-          .then((apiBasketProduct => {
-            /*console.log(productLocalStorage)*/
-           /*console.log(apiBasketProduct);*/
-            tableProducts.push({ choosedColor: basketProduct.color, choosedQuantity: basketProduct.quantity, productDetail: apiBasketProduct });
-          })))
-          displayBasketProducts(tableProducts)
+    /*let product = await getOneProduct(basketProduct.id) ;*/
+    /*console.log(product);*/
+    totalQuantity = totalQuantity + basketProduct.quantity ;
+    /*totalPrice += product.price * basketProduct.quantity;*/
+    console.log(basketProduct);
+    console.log(basketProduct.quantity);
   }
+  document.querySelector("#totalQuantity").innerHTML = totalQuantity;
+  /*document.querySelector("#totalPrice").innerHTML = totalPrice*/
 };
 
-getProductsBasket();
+// appel de la fonction pour afficher le prix total
+getTotalQuantitytAndPrice();
 
 
+
+/*********************************************************************************************************************************************************************** */
 
 /* Afficher le nombre de produit et le prix total */
-console.log(listBasketProducts);
-console.log(tableProducts);
-
-
-function getNumberProducts(basket) {
-  let canapesTotalQuantity = [] ;
-  basket.forEach((canape) => {
-    canapesTotalQuantity.push(canape.quantity);
-  });
-  document.querySelector("#totalQuantity").innerHTML = `${eval(canapesTotalQuantity.join("+"))}`; // methode eval js qui permet d'évaluer la chaîne de caractère et méthode join
-};
-
-/*Test 2 à partir des objets du tableau table product - servira pour récupérer le prix total aussi*/
-  let canapesTotalQuantity2 = [] ;
-  for (object of tableProducts) {
-  };
-  console.log(canapesTotalQuantity2)
-
-
-  /*
-  document.querySelector("#totalQuantity").innerHTML = `${eval(canapesTotalQuantity.join("+"))}`; // methode eval js qui permet d'évaluer la chaîne de caractère et méthode join
+/*
+let productsPrices = listBasketProducts.map((Object.quantity) => {
+  return listBasketProducts.quantity
+})
+console.log(productsPrices)
 */
 
-/**/
-function getPriceProducts(basket) {
-  basket.forEach((canape) => {
-    canapesTotalQuantity.push(canape.price);
-  });
-  document.querySelector("#totalPrice").innerHTML = `${eval(canapesTotalQuantity.join("+"))}`; // methode eval js qui permet d'évaluer la chaîne de caractère et méthode join
+/*
+function getNumberProducts(basket) {
+  let canapesTotalQuantity = [] ;
+  for (canape of basket) {
+    canapesTotalQuantity.push(canape.quantity);
+  };
+  document.querySelector("#totalQuantity").innerHTML = `${eval(canapesTotalQuantity.join("+"))}`; // methode eval js qui permet d'évaluer la chaîne de caractère et méthode join
 };
 
-getNumberProducts(listBasketProducts) 
+getNumberProducts(listBasketProducts);
+*/
+/*
+Const variable = new classe()
+Variable.getNumberProduct() 
+*/
 
+/*Test 2 à partir des objets du tableau table product - servira pour récupérer le prix total aussi*/
+/*
+function getNumberProducts(tableProducts) {
+  let canapesTotalQuantity = [] ;
+  for (canape of tableProducts) {
+    canapesTotalQuantity.push(canape.choosedQuantity);
+  };
+  document.querySelector("#totalQuantity").innerHTML = `${eval(canapesTotalQuantity.join("+"))}`; // methode eval js qui permet d'évaluer la chaîne de caractère et méthode join
+};
 
-
-
-
-
-
-
-/*Propriété dataset*/
-/*Modifier la quantité depuis la page panier dans le local storage*/
-/*addEventListener de type change*/
-
+getNumberProducts(tableProducts)
+*/
 
 /*Questions à Terrence : 
 - créer la fonction changeQuantity avec addEventListener événement change
@@ -132,6 +142,47 @@ removeFromBasket(product) {
     }
 avec une écoute sur le bouton de la class deleteItem
 */
+/*
+console.log(listBasketProducts);
+console.log(tableProducts);
+
+listBasketProducts.forEach(object =>{
+  console.log(object);
+});
+*/
+
+/*Pourquoi ce truc ci-dessous ne marche pas ???*/
+/*console.log(tableProducts);
+tableProducts.forEach(object =>{
+  console.log(object);
+});
+*/
+
+
+/*
+function getPriceProducts(basket) {
+  let canapesTotalPrice = [] ;
+  for (canape of basket) {
+    canapesTotalPrice .push(canape.price);
+  };
+//};
+
+
+/*Modifier la quantité depuis la page panier dans le local storage*/
+/*addEventListener de type change*/
+/*
+let inputQuantity = document.getElementsByClassName("itemQuantity");
+console.log(inputQuantity); // type : HTMLCollection
+*/
+/*Propriété dataset : data-value ?*/
+
+/*
+changedQuantity.addEventListener('change', function(){
+  modifier le DOM avec le chiffre rentré par l'utilisateur
+  Pousser ce chiffre dans le local storage
+});
+*/
+
 
 
 /*
@@ -148,11 +199,6 @@ let myProduct = btnAddToBasket.addEventListener("click", () => {
 let select = document.querySelector('#lang');
 select.addEventListener('change', function () {
             result.textContent = this.value;});*/
-
-
-
-
-
 
 
 
