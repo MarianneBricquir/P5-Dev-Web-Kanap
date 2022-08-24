@@ -30,42 +30,4 @@ class Basket {
         this.save();
     }
 
-    // supprimer un produit du panier par son id et sa couleur ! FONCITONNE AVEC LE OU LOGIQUE || mais pas le &&
-    // utiliser le remove item?
-    removeFromBasket(product) {
-        this.basket = this.basket.filter(p => p.id != product.id || p.color != product.color) // .filter
-        this.save();
-    }
-
-    // changer la quantité d'un produit
-    changeQuantity(product, quantity) {
-        let foundProduct = this.basket.find(p => p.id == product.id && p.color == product.color)
-        if (foundProduct != undefined) {
-            foundProduct.quantity += quantity;
-            if (foundProduct.quantity <= 0) {
-                this.removeFromBasket(foundProduct)
-            } else {
-                this.save();
-            }
-        }
-    }
-    
-    
-    // afficher le nombre de produits dans le panier
-    getNumberProducts() {
-        let number = 0;
-        for (let product of this.basket) {
-            number += product.quantity;
-        }
-        return number;
-    }
-
-    // afficher le prix total du panier
-    getTotalPrices() {
-        let total = 0;
-        for (let product of this.basket) {
-            total += product.quantity * product.price;
-        }
-        return total;
-    }
 }
