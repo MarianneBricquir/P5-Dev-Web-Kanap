@@ -73,13 +73,13 @@ infoProduct(currentUrlWithId)
 */
 
 /* Test 3 : on créé une fonction avec l'affichage des infos d'un produit avec appendChild dans la boucle*/
-function formattingInfosProduct(specificPorduct) {
-    document.querySelector('title').textContent = `${specificPorduct.name}`;
-    document.querySelector('.item__img').innerHTML = `<img src="${specificPorduct.imageUrl}" alt="${specificPorduct.altTxt}, ${specificPorduct.name}">`;
-    document.querySelector('#title').textContent = `${specificPorduct.name}`;
-    document.querySelector('#price').textContent = `${specificPorduct.price}`;
-    document.querySelector('#description').textContent = `${specificPorduct.description}`;
-    let colorOptions = specificPorduct.colors;
+function formattingInfosProduct(specificProduct) {
+    document.querySelector('title').textContent = `${specificProduct.name}`;
+    document.querySelector('.item__img').innerHTML = `<img src="${specificProduct.imageUrl}" alt="${specificProduct.altTxt}, ${specificProduct.name}">`;
+    document.querySelector('#title').textContent = `${specificProduct.name}`;
+    document.querySelector('#price').textContent = `${specificProduct.price}`;
+    document.querySelector('#description').textContent = `${specificProduct.description}`;
+    let colorOptions = specificProduct.colors;
     let colorLength = colorOptions.length;
     select = document.querySelector("#colors")
     for (let c = 0; c < colorLength; c++) {
@@ -96,8 +96,8 @@ function displayProduct(urlWithId) {
     fetch(urlWithId)
         .then((response) =>
             response.json()
-                .then((specificPorduct => {
-                    formattingInfosProduct(specificPorduct);
+                .then((specificProduct => {
+                    formattingInfosProduct(specificProduct);
                 })))
         .catch(error => console.log(`Erreur : ` + err));
 };
