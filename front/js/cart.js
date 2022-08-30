@@ -19,43 +19,48 @@ function getOneProduct(idProduct) {
 
 
 /*************************************************************************************************************/
+/*Fonction d'affichage de toutes les informations du panier du client*/
+/*************************************************************************************************************/
+async function displayInfoBasket ()  {
+  await displayBasketProducts()
+  await getTotalQuantitytAndPrice();
+};
+
+/*************************************************************************************************************/
 /*Fonction d'affichage des produits du local storage*/
 /*************************************************************************************************************/
-
 async function displayBasketProducts() {
   /* vérifier s'il y a un produit dans le panier ?
-     if (listBasketProducts = true){
-     console.log(listBasketProducts)
+  if (listBasketProducts = true){
+  console.log(listBasketProducts)
   }*/
   let display = ``;
   for (let basketProduct of listBasketProducts) { // On fait une boucle for sur les produits contenus dans le local storage
     let product = await getOneProduct(basketProduct.id); // on récupère les informations d'un produit avec la fonction getOneProduct
     display += `<article class="cart__item" data-id="${basketProduct.id}" data-color="${basketProduct.color}">
-      <div class="cart__item__img">
-        <img src="${product.imageUrl}" alt="Photographie d'un canapé">
-      </div>
-      <div class="cart__item__content">
-        <div class="cart__item__content__description">
-          <h2>${product.name}</h2>
-          <p>${basketProduct.color}</p>
-          <p>${product.price} €</p>
-        </div>
-        <div class="cart__item__content__settings">
-          <div class="cart__item__content__settings__quantity">
-            <p>Qté : </p>
-            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${basketProduct.quantity}">
-          </div>
-          <div class="cart__item__content__settings__delete">
-            <p class="deleteItem">Supprimer</p>
-          </div>
-        </div>
-      </div>
-    </article> `
+ <div class="cart__item__img">
+   <img src="${product.imageUrl}" alt="Photographie d'un canapé">
+ </div>
+ <div class="cart__item__content">
+   <div class="cart__item__content__description">
+     <h2>${product.name}</h2>
+     <p>${basketProduct.color}</p>
+     <p>${product.price} €</p>
+   </div>
+   <div class="cart__item__content__settings">
+     <div class="cart__item__content__settings__quantity">
+       <p>Qté : </p>
+       <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${basketProduct.quantity}">
+     </div>
+     <div class="cart__item__content__settings__delete">
+       <p class="deleteItem">Supprimer</p>
+     </div>
+   </div>
+ </div>
+</article> `
   }
   document.querySelector("#cart__items").innerHTML = display;
-  /*getTotalQuantitytAndPrice();*/
-};
-
+}
 
 /*************************************************************************************************************/
 /* Afficher le nombre de produits et le prix total */
@@ -66,7 +71,6 @@ async function getTotalQuantitytAndPrice() {
   let totalPrice = 0;
   for (let basketProduct of listBasketProducts) {
     let product = await getOneProduct(basketProduct.id);
-    /*console.log(product);*/
     totalQuantity = totalQuantity + basketProduct.quantity;
     totalPrice += product.price * basketProduct.quantity;
   }
@@ -74,18 +78,13 @@ async function getTotalQuantitytAndPrice() {
   document.querySelector("#totalPrice").innerHTML = totalPrice
 };
 
-// appel de la fonction pour afficher le prix total
-
-
-
 /*************************************************************************************************************/
 /*Modifier la quantité depuis la page panier dans le local storage*/
 /*************************************************************************************************************/
 
-// fonctionne mais pb : ne fait plus les fonction précédentes (displayBasketProducts et getTotalQuantityAndPrice)
-async function getInputQuantity() {
-  await displayBasketProducts();
-  await getTotalQuantitytAndPrice();
+// fonctionne mais pb : ne fait plus les fonctions précédentes (displayBasketProducts)
+async function changedProductQuantity() {
+  await displayInfoBasket ();
   let inputQuantity = document.getElementsByClassName("itemQuantity");
   for (let item of inputQuantity) {
     item.addEventListener('change', function (e) {
@@ -118,18 +117,16 @@ async function getInputQuantity() {
       let foundChangedProduct = listBasketProducts.find(p => p.id == changedProduct.id && p.color == changedProduct.color);
       // si ça existe : récupérer la valeur de la quantité changée : item.value
       if (foundChangedProduct != undefined) {
-        foundChangedProduct.quantity = parseInt(changedProduct.quantity)
-        localStorage.setItem("basket", JSON.stringify(foundChangedProduct));
-        // remplacer la quantite
-        // save les infos modifiees !! sans écraser l'ancien panier
-        //localStorage.setItem("basket", JSON.stringify(foundChangedProduct))
-      }
+        foundChangedProduct.quantity = parseInt(changedProduct.quantity) // récupère la valeur de la nouvelle quantité
+        localStorage.setItem("basket", JSON.stringify(foundChangedProduct)); // enregistre cette nouvelle quantité dans le basket
+      };
+      displayInfoBasket ();
     });
   }
 }
 
-getInputQuantity()
-
+changedProductQuantity();
+// après, j'ai cassé le localstorage, listBasketProducts is not iterable
 
 /*************************************************************************************************************/
 /*Supprimer un produit de la page panier et du local storage*/
@@ -156,7 +153,7 @@ async function removeProductFromBasket() {
   console.log(removeButtons)
   for (let btn of removeButtons) {
     btn.addEventListener('click', function (e) {
-    console.log("Vous allez supprimer un produit");
+      console.log("Vous allez supprimer un produit");
     });
   }
 };
