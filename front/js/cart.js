@@ -53,6 +53,7 @@ async function displayBasketProducts() {
     </article> `
   }
   document.querySelector("#cart__items").innerHTML = display;
+  /*getTotalQuantitytAndPrice();*/
 };
 
 
@@ -74,18 +75,19 @@ async function getTotalQuantitytAndPrice() {
 };
 
 // appel de la fonction pour afficher le prix total
-getTotalQuantitytAndPrice();
+
 
 
 /*************************************************************************************************************/
 /*Modifier la quantité depuis la page panier dans le local storage*/
 /*************************************************************************************************************/
 
+// fonctionne mais pb : ne fait plus les fonction précédentes (displayBasketProducts et getTotalQuantityAndPrice)
 async function getInputQuantity() {
   await displayBasketProducts();
+  await getTotalQuantitytAndPrice();
   let inputQuantity = document.getElementsByClassName("itemQuantity");
   for (let item of inputQuantity) {
-    console.log(item.value);
     item.addEventListener('change', function (e) {
       /*if (typeof item.value == "number" && item.value > 0 && item.value <= 100) {
       }
@@ -116,13 +118,11 @@ async function getInputQuantity() {
       let foundChangedProduct = listBasketProducts.find(p => p.id == changedProduct.id && p.color == changedProduct.color);
       // si ça existe : récupérer la valeur de la quantité changée : item.value
       if (foundChangedProduct != undefined) {
-        let basket = new Basket();
         foundChangedProduct.quantity = parseInt(changedProduct.quantity)
-        console.log(foundChangedProduct.quantity)
+        localStorage.setItem("basket", JSON.stringify(foundChangedProduct));
         // remplacer la quantite
         // save les infos modifiees !! sans écraser l'ancien panier
         //localStorage.setItem("basket", JSON.stringify(foundChangedProduct))
-        
       }
     });
   }
@@ -150,19 +150,25 @@ console.log(removeButton2) // ne foctionne pas - pb de la fonction displayBasket
 */
 
 /* pour chaque click sur supprimer : récupérer les élements dans le local storage */
-
-/*
 async function removeProductFromBasket() {
-  
-}
-*/
+  await displayBasketProducts();
+  let removeButtons = document.getElementsByClassName("deleteItem");
+  console.log(removeButtons)
+  for (let btn of removeButtons) {
+    btn.addEventListener('click', function (e) {
+    console.log("Vous allez supprimer un produit");
+    });
+  }
+};
+
+removeProductFromBasket();
+
 /*************************************************************************************************************/
 /*Passer la commande
 - récupérer et analyser les données saisies
 - message d'erreur si besoin (avec les expressions régulières en JS - regex - lire la documentation)
 - constituer un objet contact à partir des données du formulaire et un tableau de produits
 */
-
 
 
 /*constante pour chaque entrée du formulaire*/
