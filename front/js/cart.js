@@ -21,7 +21,7 @@ function getOneProduct(idProduct) {
 /*************************************************************************************************************/
 /*Fonction d'affichage de toutes les informations du panier du client*/
 /*************************************************************************************************************/
-async function displayInfoBasket ()  {
+async function displayInfoBasket() {
   await displayBasketProducts()
   await getTotalQuantitytAndPrice();
 };
@@ -82,80 +82,74 @@ async function getTotalQuantitytAndPrice() {
 /*Modifier la quantité depuis la page panier dans le local storage*/
 /*************************************************************************************************************/
 
-// fonctionne mais pb : ne fait plus les fonctions précédentes (displayBasketProducts)
 async function changedProductQuantity() {
-  await displayInfoBasket ();
+  await displayInfoBasket();
   let inputQuantity = document.getElementsByClassName("itemQuantity");
   for (let item of inputQuantity) {
     item.addEventListener('change', function (e) {
-      /*if (typeof item.value == "number" && item.value > 0 && item.value <= 100) {
+      if (item.value > 0 && item.value <= 100) {
+        alert(`Vous venez de modifier la quantité du produit à ${item.value}`)
+        // dataset 
+        const article = e.target.closest("article.cart__item");
+        // method getAttribute
+        const id = article.getAttribute("data-id");
+        const color = article.getAttribute("data-color");
+        // paramètres du produit modifié
+        changedProduct =
+        {
+          "id": id,
+          "color": color,
+          "quantity": item.value
+        };
+        // rechercher dans le localStorage
+        let foundChangedProduct = listBasketProducts.find(p => p.id == changedProduct.id && p.color == changedProduct.color);
+        // si ça existe : récupérer la valeur de la quantité changée : item.value
+        if (foundChangedProduct != undefined) {
+          foundChangedProduct.quantity = parseInt(changedProduct.quantity) // récupère la valeur de la nouvelle quantité
+          localStorage.setItem("basket", JSON.stringify(listBasketProducts)); // enregistre cette nouvelle quantité dans le basket
+        };
+        displayInfoBasket();
+        changedProductQuantity();
       }
       else {
-        alert(`Vous devez renseigner une qunatité inférieure ou égale à 100`);
-      }*/
-      alert(`Vous venez de modifier la quantité du produit à ${item.value}`)
-      // dataset 
-      const article = e.target.closest("article.cart__item");
-      /*console.log("affichage d'article");
-      console.log(article);*/
-      // method getAttribute
-      const id = article.getAttribute("data-id");
-      const color = article.getAttribute("data-color");
-      /*console.log("afficher id et color");
-      console.log(id, color);*/
-      // récupérer le local storage et vérifier si produit avec id + color existe
-      changedProduct =
-      {
-        "id": id,
-        "color": color,
-        "quantity": item.value
-      };
-      /*console.log("product");
-      console.log(changedProduct);*/
-      // console.log(changedProduct.id) ;
-      // rechercher dans le localStorage
-      let foundChangedProduct = listBasketProducts.find(p => p.id == changedProduct.id && p.color == changedProduct.color);
-      // si ça existe : récupérer la valeur de la quantité changée : item.value
-      if (foundChangedProduct != undefined) {
-        foundChangedProduct.quantity = parseInt(changedProduct.quantity) // récupère la valeur de la nouvelle quantité
-        localStorage.setItem("basket", JSON.stringify(foundChangedProduct)); // enregistre cette nouvelle quantité dans le basket
-      };
-      displayInfoBasket ();
+        alert(`Vous devez saisir une quantité entre 1 et 100`)
+      }
     });
   }
 }
 
 changedProductQuantity();
-// après, j'ai cassé le localstorage, listBasketProducts is not iterable
 
 /*************************************************************************************************************/
 /*Supprimer un produit de la page panier et du local storage*/
-/* ajout d'une propriété dataset à la classe deleteItem ?*/
-
-/* A créer quelque part
-let dataId = document.createElement('data-id');
-select.appendChild(dataId);
-*/
-/*
-let removeButton = document.getElementsByClassName("deleteItem");
-console.log("Elements deleteItem correspondant au texte Supprimer");
-console.log(removeButton);
-*/
-/*
-let removeButton2 = document.querySelectorAll(".deleteItem");
-console.log(removeButton2) // ne foctionne pas - pb de la fonction displayBasketProducts() qui est asynchrone ?
-*/
-
 /* pour chaque click sur supprimer : récupérer les élements dans le local storage */
+
+
+
 async function removeProductFromBasket() {
   await displayBasketProducts();
+  await changedProductQuantity()
   let removeButtons = document.getElementsByClassName("deleteItem");
-  console.log(removeButtons)
+  console.log(removeButtons);
   for (let btn of removeButtons) {
     btn.addEventListener('click', function (e) {
-      console.log("Vous allez supprimer un produit");
+      alert("Vous avez supprimer le produit de votre panier");
+      const article = e.target.closest("article.cart__item");
+      const id = article.getAttribute("data-id");
+      const color = article.getAttribute("data-color");
+      productToRemove =
+      {
+        "id": id,
+        "color": color
+      };
+      // avec la method filter
+      let productsToKeep = listBasketProducts.filter(p => p.id != productToRemove.id && p.color != productToRemove.color)
+      // sauvegarde : ;
+      localStorage.setItem("basket", JSON.stringify(productsToKeep))
+      // faire un remove pour le supprimer du dom ou réactualiser la page
+      location.reload(true);
     });
-  }
+  };
 };
 
 removeProductFromBasket();
@@ -175,70 +169,130 @@ const adresse = document.querySelector("#address");
 const ville = document.querySelector("#city");
 const email = document.querySelector("#email");
 
+
+
 /*controle des valeurs rentrée par l'utilisateur*/
+let nameAndCityRegex = /^s*[a-zéèàA-Z-\s]{3,25}$/;
+let adresseRegex = /^[0-9]{1,3}[a-zA-Z-\s]{5,30}$/;
+let emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-let nameRegex = /^[a-zA-Z-\s]+$/; // demandr à Terrence pour au moins 3 caractères ? 
-
+let firstNameError = document.getElementById("firstNameErrorMsg");
+prenom.value = "";
 prenom.addEventListener('change', function (e) {
-  let firstNameError = document.getElementById("firstNameErrorMsg");
   if (prenom.value.trim() == "") { // la fonction trim retire les espaces initiaux et finaux
     firstNameError.innerHTML = "Votre prénom est requis";
   }
-  else if (nameRegex.test(prenom.value) == true) {
-    firstNameError.innerHTML = "Le champ est ok";
+  else if (nameAndCityRegex.test(prenom.value) == true) {
+    firstNameError.innerHTML = "";
   }
-  else if (nameRegex.test(prenom.value) == false) {
-    firstNameError.innerHTML = "Le champ n'est pas valide : le prénom doit comporter uniquement des lettres et des tirets";
+  else if (nameAndCityRegex.test(prenom.value) == false) {
+    firstNameError.innerHTML = "Votre prénom doit comporter au moins 3 caractères et moins de 25 et uniquement des lettres et des tirets";
   }
 });
 
-
+let lastNameError = document.getElementById("lastNameErrorMsg");
 nom.addEventListener('change', function (e) {
-  let lastNameError = document.getElementById("lastNameErrorMsg");
   if (nom.value.trim() == "") { // la fonction trim retire les espaces initiaux et finaux
     lastNameError.innerHTML = "Votre nom est requis";
   }
-  else if (nameRegex.test(nom.value) == true) {
-    lastNameError.innerHTML = "Le champ est ok";
+  else if (nameAndCityRegex.test(nom.value) == true) {
+    lastNameError.innerHTML = "";
   }
-  else if (nameRegex.test(nom.value) == false) {
-    lastNameError.innerHTML = "Le champ n'est pas valide : le nom doit comporter uniquement des lettres et des tirets";
+  else if (nameAndCityRegex.test(nom.value) == false) {
+    lastNameError.innerHTML = "Votre nom doit comporter au moins 3 caractères et moins de 25 et uniquement des lettres et des tirets";
   }
 });
 
+let adressError = document.getElementById("addressErrorMsg");
+adresse.addEventListener('change', function (e) {
+  if (adresse.value.trim() == "") { // la fonction trim retire les espaces initiaux et finaux
+    adressError.innerHTML = "Votre adresse est requise";
+  }
+  else if (adresseRegex.test(adresse.value) == true) {
+    adressError.innerHTML = "";
+  }
+  else if (adresseRegex.test(adresse.value) == false) {
+    adressError.innerHTML = "Votre adresse n'est pas valide : elle doit commencer par un chiffre, le nom de la rue doit comporter entre 5 et 30 caractères et uniquement des lettres et des tirets";
+  }
+});
+
+let cityError = document.getElementById("cityErrorMsg");
+ville.addEventListener('change', function (e) {
+  if (ville.value.trim() == "") { // la fonction trim retire les espaces initiaux et finaux
+    cityError.innerHTML = "Votre ville est requise";
+  }
+  else if (nameAndCityRegex.test(ville.value) == true) {
+    cityError.innerHTML = "";
+  }
+  else if (nameAndCityRegex.test(ville.value) == false) {
+    cityError.innerHTML = "Votre ville doit comporter au moins 3 caractères et moins de 25 et uniquement des lettres et des tirets";
+  }
+});
+
+
+/*Création d'une variable globale*/
+let emailError = document.getElementById("emailErrorMsg");
+email.addEventListener('change', function (e) {
+  if (email.value.trim() == "") { // la fonction trim retire les espaces initiaux et finaux
+    emailError.innerHTML = "Votre adresse email est requise";
+  }
+  else if (emailRegex.test(email.value) == true) {
+    emailError.innerHTML = "";
+  }
+  else if (emailRegex.test(email.value) == false) {
+    emailError.innerHTML = "Veuillez rentrer une adresse email valide, par exemple : pierre@gmail.com";
+  }
+});
+
+/*si emailError.innerHTML = "Le champ est ok" est vide = alors on envoie la commande*/
+
+
+
 const passerCommande = document.querySelector("#order");
-
-
-
 
 /*console.log(passerCommande);*/
 passerCommande.addEventListener('click', function (e) {
   // stop le comportement par défaut
   // e.preventDefault();
-
   // ajout du controle des saisies utilisateur avant envoie du formulaire
+  if (firstNameError.innerHTML == "" && lastNameError.innerHTML == "" && adressError.innerHTML == "" && cityError.innerHTML == "" && emailError.innerHTML == "") {
+    // récupération des valeurs du formulaire dans le local storage
+    const coordonneesClient = {
+      prenom: prenom.value,
+      nom: nom.value,
+      adresse: adresse.value,
+      ville: ville.value,
+      email: email.value
+    };
+    /*
+    console.log("coordonneesClient");
+    console.log(coordonneesClient);
+    */
 
-  // récupération des valeurs du formulaire dans le local storage
-  const coordonneesClient = {
-    prenom: prenom.value,
-    nom: nom.value,
-    adresse: adresse.value,
-    ville: ville.value,
-    email: email.value
-  };
-  /*
-  console.log("coordonneesClient");
-  console.log(coordonneesClient);
-  */
+    // récupération des valeurs du formulaire dans le local storage
+    localStorage.setItem("coordonneesClient", JSON.stringify(coordonneesClient));
 
-  // récupération des valeurs du formulaire dans le local storage
-  localStorage.setItem("coordonneesClient", JSON.stringify(coordonneesClient));
+    // Formulaire + produits du panier dans un objet à envoyer vers le serveur
+    const commandePourServeur = {
+      listBasketProducts,
+      coordonneesClient
+    };
 
-  // Formulaire + produits du panier dans un objet à envoyer vers le serveur
-  const commandePourServeur = {
-    listBasketProducts,
-    coordonneesClient
-  };
+    // Envoyer la commande sur le serveur et rediriger le client vers la page confirmation
+    // fetch avec un then : dans le return url avec id commande reçu de l'api
+
+
+
+
+
+  } else {
+    alert("Le formulaire n'est pas correctement renseigné");
+  }
+
+
+
+
+
   /*
   console.log("commandePourServeur");
   console.log(commandePourServeur);
