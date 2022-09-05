@@ -147,6 +147,7 @@ let myProduct = btnAddToBasket.addEventListener("click", () => {
     /*Condition pour ajouter le produit : que l'utilisateur ait choisi une couleur et une quantité*/
     if (product.color != "" && product.quantity > 0 && product.quantity <= 100 ){
         basket.add(product)
+        alert("Le produit a bien été ajouter à votre panier")
     }else{
         alert("Veuillez choisir une couleur et une quantité entre 0 et 100")
     }

@@ -2,8 +2,8 @@
 
 // on récupère le panier depuis la page "Panier"
 let listBasketProducts = JSON.parse(localStorage.getItem("basket"));
-console.log("Objet listBasketProducts");
-console.log(listBasketProducts)
+//console.log("Objet listBasketProducts");
+//console.log(listBasketProducts)
 
 
 /* fonction qui permet d'aller chercher les éléments d'un seul produit dans l'API*/
@@ -112,7 +112,9 @@ async function changedProductQuantity() {
         changedProductQuantity();
       }
       else {
-        alert(`Vous devez saisir une quantité entre 1 et 100`)
+        alert("Vous devez saisir une quantité entre 1 et 100 ou supprimer le produit")
+        displayInfoBasket();
+        changedProductQuantity();
       }
     });
   }
@@ -130,7 +132,7 @@ async function removeProductFromBasket() {
   await displayBasketProducts();
   await changedProductQuantity()
   let removeButtons = document.getElementsByClassName("deleteItem");
-  console.log(removeButtons);
+  //console.log(removeButtons);
   for (let btn of removeButtons) {
     btn.addEventListener('click', function (e) {
       alert("Vous avez supprimer le produit de votre panier");
@@ -147,6 +149,7 @@ async function removeProductFromBasket() {
       // sauvegarde : ;
       localStorage.setItem("basket", JSON.stringify(productsToKeep))
       // faire un remove pour le supprimer du dom ou réactualiser la page
+      // article.remove();
       location.reload(true);
     });
   };
@@ -191,6 +194,7 @@ prenom.addEventListener('change', function (e) {
 });
 
 let lastNameError = document.getElementById("lastNameErrorMsg");
+nom.value = "";
 nom.addEventListener('change', function (e) {
   if (nom.value.trim() == "") { // la fonction trim retire les espaces initiaux et finaux
     lastNameError.innerHTML = "Votre nom est requis";
@@ -203,6 +207,7 @@ nom.addEventListener('change', function (e) {
   }
 });
 
+adresse.value = "";
 let adressError = document.getElementById("addressErrorMsg");
 adresse.addEventListener('change', function (e) {
   if (adresse.value.trim() == "") { // la fonction trim retire les espaces initiaux et finaux
@@ -216,6 +221,7 @@ adresse.addEventListener('change', function (e) {
   }
 });
 
+ville.value = "";
 let cityError = document.getElementById("cityErrorMsg");
 ville.addEventListener('change', function (e) {
   if (ville.value.trim() == "") { // la fonction trim retire les espaces initiaux et finaux
@@ -229,8 +235,7 @@ ville.addEventListener('change', function (e) {
   }
 });
 
-
-/*Création d'une variable globale*/
+email.value = "";
 let emailError = document.getElementById("emailErrorMsg");
 email.addEventListener('change', function (e) {
   if (email.value.trim() == "") { // la fonction trim retire les espaces initiaux et finaux
@@ -244,68 +249,83 @@ email.addEventListener('change', function (e) {
   }
 });
 
-/*si emailError.innerHTML = "Le champ est ok" est vide = alors on envoie la commande*/
-
-
 
 const passerCommande = document.querySelector("#order");
 
 /*console.log(passerCommande);*/
 passerCommande.addEventListener('click', function (e) {
   // stop le comportement par défaut
-  // e.preventDefault();
+  e.preventDefault();
   // ajout du controle des saisies utilisateur avant envoie du formulaire
-  if (firstNameError.innerHTML == "" && lastNameError.innerHTML == "" && adressError.innerHTML == "" && cityError.innerHTML == "" && emailError.innerHTML == "") {
+  if (firstNameError.innerHTML == "" && lastNameError.innerHTML == "" && adressError.innerHTML == ""
+    && cityError.innerHTML == "" && emailError.innerHTML == "") {
     // récupération des valeurs du formulaire dans le local storage
     const coordonneesClient = {
-      prenom: prenom.value,
-      nom: nom.value,
-      adresse: adresse.value,
-      ville: ville.value,
+      firstName: prenom.value,
+      lastName: nom.value,
+      address: adresse.value,
+      city: ville.value,
       email: email.value
     };
-    /*
-    console.log("coordonneesClient");
-    console.log(coordonneesClient);
-    */
-
     // récupération des valeurs du formulaire dans le local storage
     localStorage.setItem("coordonneesClient", JSON.stringify(coordonneesClient));
+    console.log(coordonneesClient);
 
-    // Formulaire + produits du panier dans un objet à envoyer vers le serveur
-    const commandePourServeur = {
-      listBasketProducts,
-      coordonneesClient
+    // récupération des id des produits du paniers
+    let idOrderedProduct = [];
+    for (let orderedProduct of listBasketProducts) {
+      idOrderedProduct.push(orderedProduct.id)
     };
+    //console.log("les id des produits")
+
+    // Données à envoyer à l'API
+    console.log(idOrderedProduct)
+    const infoOrder = {
+      contact: coordonneesClient,
+      products: idOrderedProduct
+    };
+    console.log(infoOrder);
 
     // Envoyer la commande sur le serveur et rediriger le client vers la page confirmation
-    // fetch avec un then : dans le return url avec id commande reçu de l'api
-
-
-
-
+    // requete fetch https://www.geeksforgeeks.org/get-and-post-method-using-fetch-api/
+    fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(infoOrder),
+    })
+      .then((response) => response.json())
+      .then((promise) => {
+        let responseApi = promise;
+        // console.log(responseApi);
+        // changer de page
+        window.location = `http://127.0.0.1:5501/front/html/confirmation.html?id=${responseApi.orderId}`
+      });
 
   } else {
     alert("Le formulaire n'est pas correctement renseigné");
   }
-
-
-
-
-
-  /*
-  console.log("commandePourServeur");
-  console.log(commandePourServeur);
-  */
-  // Envoi de la commande au serveur
-
 });
 
 
+/*************************************************************************************************************/
+/*En plus : si le client a déjà rentré ses coordonnées dans le local storage : 
+les récupérer dans les champs du formulaire */
+/*************************************************************************************************************/
+const infoClientToKeep = JSON.parse(localStorage.getItem("coordonneesClient"));
+console.log(infoClientToKeep)
 
 
+function keepClientContact() {
+  if (infoClientToKeep != undefined) {
+    prenom.value = infoClientToKeep.firstName ;
+    nom.value = infoClientToKeep.lastName ;
+    adresse.value = infoClientToKeep.address ;
+    ville.value = infoClientToKeep.city ;
+    email.value = infoClientToKeep.email ;
+  }
+  else {
+    console.log("Le client n'a pas encore rempli le formulaire sur le site");
+  }
+};
 
-
-
-
-/* Si changement de page : garder le contenu du formulaire stocké dans le localStorage */
+keepClientContact();
