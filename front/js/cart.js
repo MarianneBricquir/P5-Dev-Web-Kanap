@@ -22,9 +22,12 @@ function getOneProduct(idProduct) {
 /*Fonction d'affichage de toutes les informations du panier du client*/
 /*************************************************************************************************************/
 async function displayInfoBasket() {
-  await displayBasketProducts()
+  await displayBasketProducts();
   await getTotalQuantitytAndPrice();
 };
+
+changedProductQuantity();
+removeProductFromBasket();
 
 /*************************************************************************************************************/
 /*Fonction d'affichage des produits du local storage*/
@@ -65,7 +68,6 @@ async function displayBasketProducts() {
 /*************************************************************************************************************/
 /* Afficher le nombre de produits et le prix total */
 /*************************************************************************************************************/
-
 async function getTotalQuantitytAndPrice() {
   let totalQuantity = 0;
   let totalPrice = 0;
@@ -78,10 +80,10 @@ async function getTotalQuantitytAndPrice() {
   document.querySelector("#totalPrice").innerHTML = totalPrice
 };
 
+/*********************************  Fonctionnalités de modifications du panier sur la page *********************************/
 /*************************************************************************************************************/
 /*Modifier la quantité depuis la page panier dans le local storage*/
 /*************************************************************************************************************/
-
 async function changedProductQuantity() {
   await displayInfoBasket();
   let inputQuantity = document.getElementsByClassName("itemQuantity");
@@ -110,29 +112,25 @@ async function changedProductQuantity() {
         };
         displayInfoBasket();
         changedProductQuantity();
+        removeProductFromBasket();
       }
       else {
         alert("Vous devez saisir une quantité entre 1 et 100 ou supprimer le produit")
         displayInfoBasket();
         changedProductQuantity();
+        removeProductFromBasket();
       }
     });
   }
 }
 
-changedProductQuantity();
-
 /*************************************************************************************************************/
 /*Supprimer un produit de la page panier et du local storage*/
 /* pour chaque click sur supprimer : récupérer les élements dans le local storage */
 
-
-
 async function removeProductFromBasket() {
-  await displayBasketProducts();
-  await changedProductQuantity()
+  await displayInfoBasket();
   let removeButtons = document.getElementsByClassName("deleteItem");
-  //console.log(removeButtons);
   for (let btn of removeButtons) {
     btn.addEventListener('click', function (e) {
       alert("Vous avez supprimer le produit de votre panier");
@@ -145,7 +143,7 @@ async function removeProductFromBasket() {
         "color": color
       };
       // avec la method filter
-      let productsToKeep = listBasketProducts.filter(p => p.id != productToRemove.id && p.color != productToRemove.color)
+      let productsToKeep = listBasketProducts.filter(p => p.id != productToRemove.id || p.color != productToRemove.color)
       // sauvegarde : ;
       localStorage.setItem("basket", JSON.stringify(productsToKeep))
       // faire un remove pour le supprimer du dom ou réactualiser la page
@@ -155,8 +153,6 @@ async function removeProductFromBasket() {
   };
 };
 
-removeProductFromBasket();
-
 /*************************************************************************************************************/
 /*Passer la commande
 - récupérer et analyser les données saisies
@@ -164,15 +160,12 @@ removeProductFromBasket();
 - constituer un objet contact à partir des données du formulaire et un tableau de produits
 */
 
-
 /*constante pour chaque entrée du formulaire*/
 const prenom = document.querySelector("#firstName");
 const nom = document.querySelector("#lastName");
 const adresse = document.querySelector("#address");
 const ville = document.querySelector("#city");
 const email = document.querySelector("#email");
-
-
 
 /*controle des valeurs rentrée par l'utilisateur*/
 let nameAndCityRegex = /^s*[a-zéèàA-Z-\s]{3,25}$/;
@@ -253,6 +246,7 @@ email.addEventListener('change', function (e) {
 const passerCommande = document.querySelector("#order");
 
 /*console.log(passerCommande);*/
+
 passerCommande.addEventListener('click', function (e) {
   // stop le comportement par défaut
   e.preventDefault();
@@ -328,4 +322,4 @@ function keepClientContact() {
   }
 };
 
-keepClientContact();
+//keepClientContact();

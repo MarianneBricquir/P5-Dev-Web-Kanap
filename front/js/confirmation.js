@@ -21,8 +21,9 @@ displayCommandId(currentCommandId);
 
 // effacer le localStorage
 
-function removeOrderedBasket (key) {
+function removeOrderedBasketClient (key) {
     localStorage.removeItem(key)
 };
 
-removeOrderedBasket("basket");
+removeOrderedBasketClient("basket");
+removeOrderedBasketClient("coordonneesClient");
