@@ -1,64 +1,15 @@
-// fonction qui permet d'afficher les produits sur la page d'accueil de façon dynamique
-// Paramètre : url de l'api
-/*function listProduct (apiUrl) {
-    fetch(apiUrl)
-        .then((response) =>
-            response.json()
-                .then((data => {
-                    // pour l'afffichage des infos des produits dans les cartes - voir pour sortir cette fonction 
-                    let affichage = '';
-                            for (let product of data) {
-                                affichage += `<a href="./product.html?id=${product._id}">
-                                <article>
-                                  <img src="${product.imageUrl}" alt="${product.altTxt}, ${product.name}">
-                                  <h3 class="productName">${product.name}</h3>
-                                  <p class="productDescription">${product.description}</p>
-                                </article>
-                                </a>`
-                            }
-                            document.querySelector("#items").innerHTML = affichage;
-                })))
-        .catch(error => console.log(`Erreur : ` + err));
-}
+// Page d'accueil
 
-// Appel de la fonction
-const API = `http://localhost:3000/api/products`
-listProduct(API);*/
+// fonction de la page 
+formattingProducts();
 
-/* Test 2
-// fonction qui formate l'affichage des produits sur la page d'accueil
-function formattingProducts(products) {
-    let display = '';
-    for (let product of products) {
-        display += `<a href="./product.html?id=${product._id}">
-                                <article>
-                                  <img src="${product.imageUrl}" alt="${product.altTxt}, ${product.name}">
-                                  <h3 class="productName">${product.name}</h3>
-                                  <p class="productDescription">${product.description}</p>
-                                </article>
-                                </a>`
-    }
-    document.querySelector("#items").innerHTML = display;
-};
+// Définition des fonctions utilisées
 
-// appel à l'api pour affichage des produits sur la page d'accueil
-function displayAllProducts(apiUrl) {
-    fetch(apiUrl)
-        .then((response) =>
-            response.json()
-                .then((products => {
-                    formattingProducts(products);
-                })))
-        .catch(error => console.log(`Erreur : ` + err));
-};
-
-let apiUrl = `http://localhost:3000/api/products`
-displayAllProducts(apiUrl);
-*/
-
-
-/* Test 3*/
-//fonction qui permet de récupérer les produits
+/*************************************************************************************************************/
+/* fonction qui récupère les produits depuis l'API
+    paramètre : l'url de l'API
+    elle retourne un tableau d'objets des produits du site
+/*************************************************************************************************************/
 function listAllProducts (apiUrl){
     return fetch(apiUrl)
         .then( (response) => {
@@ -70,10 +21,14 @@ function listAllProducts (apiUrl){
         })
 };
 
-// fonction qui permet l'affichage des produits sur la page d'accueil
+/*************************************************************************************************************/
+/* fonction d'affichage dynamique des produits sur la page
+    elle retourne du code html qui récupère dans l'API les informations des produits (img, nom, desc...)
+/*************************************************************************************************************/
 async function formattingProducts() {
     let display = '';
     const products =  await listAllProducts('http://localhost:3000/api/products'); // permet de charger toutes les données avant de passer à la suite de la fonction
+    console.log(products);
     for (let product of products) {
         display += `<a href="./product.html?id=${product._id}">
                                 <article>
@@ -85,9 +40,6 @@ async function formattingProducts() {
     }
     document.querySelector("#items").innerHTML = display;
 };
-
-formattingProducts();
-
 
 
 
